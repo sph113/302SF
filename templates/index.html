@@ -1,10 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}
+    SF_Index
+{% endblock %}
 
-</body>
-</html>
+{% block content %}
+    <table class="table">
+    <thead>
+        <tr>
+            <th>Company</th>
+            <th>Order id</th>
+            <th>District</th>
+            <th>Identifier</th>
+
+        <tr>
+    </thead>
+    <tbody>
+        <form class = "Arrange-orders" method="POST">
+            {% for order in orders %}
+                <tr>
+                    <td>{{ order.Company }}</td>
+                    <td>{{ order.Order_id }}</td>
+                    <td>{{ order.District }}</td>
+                    <td>{{ order.Customer_ID }}</td>
+                    <td>
+                        <input type="checkbox" id="id_{{ order.Order_id }}" name="selected_orders" value= "{{ order.Order_id }}" >
+                    </td>
+
+                </tr>
+            {% endfor %}
+            <select name="staffs" id="staffs">
+                <option value="Gordon">Gordon</option>
+                <option value="Jason">Jason</option>
+                <option value="Marco">Marco</option>
+                <option value="William">William</option>
+            </select>
+            <input type="submit">
+        </form>
+
+    </tbody>
+    </table>
+{% endblock %}
