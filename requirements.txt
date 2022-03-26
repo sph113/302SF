@@ -2,3 +2,4 @@ Flask
 requests
 flask_session
 flask_restful
+cs50

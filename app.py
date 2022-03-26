@@ -1,5 +1,6 @@
 from flask import Flask, render_template,redirect, request, session
 import json, requests
+from cs50 import SQL
 from flask_session import Session
 
 app = Flask(__name__)
@@ -7,9 +8,12 @@ app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
-def get_data():
+
+db = SQL ( "sqlite:///data.db" )
+
+def updateorders():
     orders = []
-    link = "http://xnobe.synology.me:8080/ordersjson"
+    link = "http://xnobe.synology.me:8080/ordersjson/"
     url = requests.get(link)
     text = url.text
     data = json.loads(text)
@@ -26,17 +30,19 @@ def get_data():
 
 @app.route('/', methods=['GET','POST'])
 def index():
-    orders=get_data()
+    orders=updateorders()
+    staffs= db.execute("select * from staff order by staff_id")
     if request.method == 'POST':
         print(request.form.getlist("selected_orders"))
         print(request.form.getlist("staffs"))
         orderstoarrange=request.form.getlist("selected_orders")
-        staff = request.form.getlist("staffs")
+        staff=request.form.getlist("staffs")
         session['orderstoarrange']=orderstoarrange
-        session['staff'] = staff
-        if 'orderstoarrange' in session and 'staff' in session:
+        session['staff']=staff
+        if 'orderstoarrange' in session:
             return redirect("/manage")
-    return render_template("index.html",orders=orders)
+    print(staffs)
+    return render_template("index.html",orders=orders,staffs=staffs)
 
 @app.route('/manage')
 def manage():
