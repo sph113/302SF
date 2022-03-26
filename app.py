@@ -7,10 +7,8 @@ app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
-
-@app.route('/', methods=['GET','POST'])
-def index():
-    orders=[]
+def get_data():
+    orders = []
     link = "http://xnobe.synology.me:8080/ordersjson"
     url = requests.get(link)
     text = url.text
@@ -24,6 +22,11 @@ def index():
         text2 = url2.text
         data2 = json.loads(text2)
         orders.append(data2)
+    return orders
+
+@app.route('/', methods=['GET','POST'])
+def index():
+    orders=get_data()
     if request.method == 'POST':
         print(request.form.getlist("selected_orders"))
         print(request.form.getlist("staffs"))

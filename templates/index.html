@@ -15,7 +15,7 @@
         <tr>
     </thead>
     <tbody>
-        <form class = "Arrange-orders" method="POST">
+        <form class = "Arrange-orders" method="POST" onsubmit="return confirm('Are you sure you want to submit?');">
             {% for order in orders %}
                 <tr>
                     <td>{{ order.Company }}</td>
@@ -28,13 +28,12 @@
 
                 </tr>
             {% endfor %}
-            <select name="staffs" id="staffs">
-                <option value="Gordon">Gordon</option>
-                <option value="Jason">Jason</option>
-                <option value="Marco">Marco</option>
-                <option value="William">William</option>
+            <select name="staffs" id="staffs" class="form-control">
+                {% for staff in staffs %}
+                    <option value="{{ staff.staff_name }}">{{ staff.staff_name }}</option>
+                {% endfor %}
             </select>
-            <input type="submit">
+            <button type="submit" class="btn btn-primary">Submit</button>
         </form>
 
     </tbody>
