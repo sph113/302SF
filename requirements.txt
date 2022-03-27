@@ -1,5 +1,10 @@
-Flask
-requests
-flask_session
-flask_restful
-cs50
+requests~=2.27.1
+cs50~=9.0.0
+Flask~=2.0.3
+Flask-Session~=0.4.0
+Flask-RESTful~=0.3.9
+click~=8.0.4
+itsdangerous==2.1.1
+Jinja2~=3.0.3
+MarkupSafe~=2.1.1
+Werkzeug~=2.0.3
