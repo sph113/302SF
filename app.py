@@ -17,20 +17,58 @@ def updateorders():
     url = requests.get(link)
     text = url.text
     data = json.loads(text)
+    getafter=db.execute('select Order_id from orders order by order_id')
     iterdata = iter(data)
-    next(iterdata)
     for i in iterdata:
         number = i
-        link2 = "http://xnobe.synology.me:8080/ordersjson/" + number.replace('order', '')
-        url2 = requests.get(link2)
-        text2 = url2.text
-        data2 = json.loads(text2)
-        orders.append(data2)
+        realnumber = number.replace('order', '')
+        valuetocheck = {'Order_id': int(realnumber) }
+        if not valuetocheck in getafter:
+            link2 = "http://xnobe.synology.me:8080/ordersjson/" + realnumber
+            url2 = requests.get(link2)
+            text2 = url2.text
+            data2 = json.loads(text2)
+            orders.append(data2)
     return orders
+
+
+def updatedatabase(orders):
+    for order in orders:
+        Company = order['Company']
+        Order_id = order['Order_id']
+        District = order['District']
+        Amounts=0
+        Total_weight=0
+        product_id=[]
+        product_name=[]
+        amount=[]
+        weight=[]
+        for i in order['Product']:
+            Amounts = Amounts + i['amount']
+            Total_weight = Total_weight + i['weight']
+            product_id.append(i['id'])
+            product_name.append(i['name'])
+            amount.append(i['amount'])
+            weight.append(i['weight'])
+        Customer_name = order['Customer_Name']
+        Customer_id = order['Customer_ID']
+        Contact = order['Phone_number']
+        Flat = order['Flat']
+        Floor = order['Floor']
+        Estate = order['Estate']
+        Street = order['Street']
+        print(Company, Order_id, District, Amounts, Total_weight)
+        db.execute("INSERT INTO orders (Company, Order_id, District, Customer_id ,Amount, Total_weight) VALUES (:Company, :Order_id,:District, :Customer_id, :Amount, :Total_weight)",Company=Company, Order_id=Order_id, Customer_id=Customer_id,District=District, Amount=Amounts, Total_weight=Total_weight)
+        db.execute("INSERT INTO orders_client (Company, Customer_id, Customer_name, Contact, Flat, Floor, Estate, Street, District, Order_id) VALUES (:Company, :Customer_id, :Customer_name, :Contact, :Flat, :Floor, :Estate, :Street, :District,:Order_id)",Company=Company,Customer_id=Customer_id,Customer_name=Customer_name,Contact=Contact,Flat=Flat,Floor=Floor,Estate=Estate,Street=Street,District=District,Order_id=Order_id)
+        y=0
+        for x in product_id:
+            db.execute("INSERT INTO orders_product (order_id, Company, product_id, amount, weight, product) VALUES (:order_id, :Company, :product_id, :amount, :weight,:product)",order_id=Order_id, Company=Company, product_id=product_id[y], amount=amount[y], weight=weight[y],product=product_name[y])
+            y=y+1
 
 @app.route('/', methods=['GET','POST'])
 def index():
-    orders=updateorders()
+    updatedatabase(updateorders())
+    orders=db.execute("select * from orders WHERE Order_id>0")
     staffs= db.execute("select * from staff order by staff_id")
     if request.method == 'POST':
         print(request.form.getlist("selected_orders"))
@@ -46,7 +84,9 @@ def index():
 
 @app.route('/manage')
 def manage():
-    return render_template("manage.html",session=session)
+    for i in session['orderstoarrange']:
+        db.execute("UPDATE orders SET staff = :staff ,status=:status WHERE Order_id = :Order_id",staff=session['staff'][0],status="Arranged" ,Order_id = int(i))
+    return redirect('/')
 
 @app.route('/updatedeliver', methods=['GET'])
 def update():
@@ -86,4 +126,4 @@ def updatestatus():
     return render_template("Status.html")
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=True)
