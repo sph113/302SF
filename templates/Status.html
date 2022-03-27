@@ -18,17 +18,17 @@ SF Status Check
             <tr>
                 <td>{{ order.Order_id }}</td>
                 <td>{{ order.District }}</td>
-                <td>
-                    <form action="/update/">
+                <td>{{ order.status }}
+                    <!--form action="/update/">
                         <input type="hidden" name="id" value="{{ order.Order_id }}" />
-                        <select name="status" id="status" class="form-control" value="{{ order.status }}">
+                        <!select name="status" id="status" class="form-control" value="{{ order.status }}">
                             <option value="Arranged">Arranged</option>
                             <option value="Packed">Packed</option>
                             <option value="Delivering">Delivering</option>
                             <option value="Arrived">Arrived</option>
                         </select>
                         <button type="submit" class="btn btn-outline-primary btn-sm">Update</button>
-                    </form>
+                    </form-->
                 </td>
                 <td>#</td>
             </tr>
