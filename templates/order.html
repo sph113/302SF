@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}
+    SF_Index
+{% endblock %}
+
+{% block content %}
+    Order:{{ order_general.Company }} {{ order_general.Order_id }}
+    <ul class="list-group">
+        <li class="list-group-item">Amount: {{ order_general.Amount }}</li>
+        <li class="list-group-item">Total weight: {{ order_general.Total_weight }}</li>
+        <li class="list-group-item">Customer: {{ order_client.Customer_name }}</li>
+        <li class="list-group-item">Contact: {{ order_client.Contact }}</li>
+        <li class="list-group-item">Address: Flat {{ order_client.Flat }}, {{ order_client.Floor }}/F, {{ order_client.Estate }}, {{ order_client.Street }}, {{ order_client.District }}</li>
+    </ul>
+    product list
+    {% for order_product in order_products %}
+        <ul class="list-group">
+            <li class="list-group-item">Id: {{ order_product.product_id }}</li>
+            <li class="list-group-item">Name: {{ order_product.product }}</li>
+            <li class="list-group-item">Amount: {{ order_product.amount }}</li>
+            <li class="list-group-item">Weight: {{ order_product.weight }}</li>
+        </ul>
+    {% endfor %}
+{% endblock %}

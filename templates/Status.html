@@ -20,14 +20,25 @@ SF Status Check
         </tr>
     </thead>
     <tbody>
-    {{% for order in orders %}}
-        <tr>
-            <td>{{ order.Order_id }}</td>
-            <td>{{ order.District }}</td>
-            <td>{{ order.status }}</td>
-            <td>{{ order.date }}</td>
-        </tr>
-    {% endfor %}
+        {% for order in orders %}
+            <tr>
+                <td>{{ order.Order_id }}</td>
+                <td>{{ order.District }}</td>
+                <td>
+                    <form action="/update/">
+                        <input type="hidden" name="id" value="{{ order.Order_id }}" />
+                        <select name="status" id="status" class="form-control" value="{{ order.status }}">
+                            <option value="Arranged">Arranged</option>
+                            <option value="Packed">Packed</option>
+                            <option value="Delivering">Delivering</option>
+                            <option value="Arrived">Arrived</option>
+                        </select>
+                        <button type="submit" class="btn btn-outline-primary btn-sm">Update</button>
+                    </form>
+                </td>
+                <td>#</td>
+            </tr>
+        {% endfor %}
     </tbody>
     </table>
 {% endblock %}

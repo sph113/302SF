@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}
+SF Status Check
+{% endblock %}
+{% block content %}
+    <h1>Hello, {{ staff }}</h1>
+    <table class="table">
+    <thead>
+        <tr>
+            <th>Company</th>
+            <th>Order id</th>
+            <th>District</th>
+        <tr>
+    </thead>
+    <tbody>
+        <form class = "Arrange-orders" method="POST" onsubmit="return confirm('Are you sure you want to submit?');">
+            {% for order in orders %}
+                <tr>
+                    <td>{{ order.Company }}</td>
+                    <td>{{ order.Order_id }}</td>
+                    <td>{{ order.District }}</td>
+                    <td>
+                        <input type="checkbox" id="id_{{ order.Order_id }}" name="selected_orders" value= "{{ order.Order_id }}" >
+                    </td>
+                    <td><button type="button" class="btn btn-primary">Detail</button></td>
+                </tr>
+            {% endfor %}
+            <select name="staffs" id="staffs" class="form-control">
+                <option value="delivering">packing</option>
+                <option value="arrived">arrived</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+    </tbody>
+    </table>
+{% endblock %}

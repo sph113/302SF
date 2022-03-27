@@ -54,6 +54,35 @@ def update():
 
 @app.route('/Status')
 def status():
+    orders = db.execute("SELECT Order_id, District, status FROM orders WHERE Order_id>0 ")
+    return render_template("Status.html",orders=orders)
+
+@app.route('/order/<order_id>',methods=['GET','POST'])
+def checkorder(order_id):
+    order_general=db.execute("Select * from orders where Order_id = :Order_id",Order_id=int(order_id))
+    order_client=db.execute("SELECT * from orders_client where Order_id = :Order_id",Order_id=int(order_id))
+    order_products=db.execute("SELECT * from orders_product where Order_id = :Order_id",Order_id=int(order_id))
+    print(order_general)
+    print(order_client)
+    print(order_products)
+    return render_template("order.html",order_general=order_general[0],order_client=order_client[0],order_products=order_products)
+
+@app.route('/deliverystatus/<staff>',methods=['GET','POST'])
+def deliverystatus(staff):
+    staffname=db.execute("SELECT staff_name from staff")
+    for i in staffname:
+        if i['staff_name'] == staff:
+            print('success')
+            orders=db.execute("SELECT * from orders where staff=:staff",staff=staff)
+            return render_template("updatestatus.html", staff=staff, orders=orders)
+    return redirect('/')
+
+@app.route('/update/')
+def updatestatus():
+    status = request.args.get('status')
+    if session:
+        orderid = int(request.args.get('orderid'))
+        db.execute("UPDATE orders SET status = :status WHERE Order_id = :Order_id", status=status ,Order_id=orderid)
     return render_template("Status.html")
 
 if __name__ == '__main__':
