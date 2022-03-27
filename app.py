@@ -1,9 +1,16 @@
 from flask import Flask, render_template,redirect, request, session
+from flask_restful import reqparse, abort, Api, Resource
 import json, requests
 from cs50 import SQL
 from flask_session import Session
 
 app = Flask(__name__)
+api = Api(app)
+
+STATUS = {
+    'status0': {
+},
+}
 
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
@@ -114,16 +121,70 @@ def deliverystatus(staff):
         if i['staff_name'] == staff:
             print('success')
             orders=db.execute("SELECT * from orders where staff=:staff",staff=staff)
+            if request.method == 'POST':
+                print(request.form.getlist("selected_orders")[0])
+                print(request.form.getlist("status")[0])
+                orderstoarrange = request.form.getlist("selected_orders")
+                status = request.form.getlist("status")
+                print("/updatestatus/"+status[0]+"/"+orderstoarrange[0])
+                return redirect("/updatestatus/"+str(status[0])+"/"+orderstoarrange[0])
             return render_template("updatestatus.html", staff=staff, orders=orders)
     return redirect('/')
 
-@app.route('/update/')
-def updatestatus():
-    status = request.args.get('status')
-    if session:
-        orderid = int(request.args.get('orderid'))
-        db.execute("UPDATE orders SET status = :status WHERE Order_id = :Order_id", status=status ,Order_id=orderid)
-    return render_template("Status.html")
+@app.route('/updatestatus/<status>/<order_id>',methods=['GET','POST'])
+def updatestatus(status,order_id):
+    if not status == 'Delivering' and not status == 'Arrived':
+        return redirect('/')
+    db.execute("UPDATE ORDERS set status = :status where Order_id=:Order_id", status=status, Order_id=order_id)
+    staff=db.execute("Select staff from orders where Order_id=:Order_id", Order_id=order_id)
+    return redirect('/deliverystatus/'+str(staff[0]['staff']))
+
+def createjson(order_id):
+    x=0
+    orders = db.execute("SELECT * FROM orders where Order_id = :order_id",order_id=order_id)
+    Order_id = orders[x]['Company'] + str(orders[x]['Order_id'])
+    Status = orders[x]['status']
+    data = {
+        "Order_id": Order_id,
+        "Status": Status
+    }
+    return data
+
+def abort_if_todo_doesnt_exist(order_id):
+    sorder_id='status'+str(order_id)
+    if sorder_id not in STATUS:
+        abort(404, message="Order {} doesn't exist".format(order_id))
+
+class Order(Resource):
+    def get(self, gorder_id):
+        sgorder_id = 'status' + str(gorder_id)
+        abort_if_todo_doesnt_exist(gorder_id)
+        return STATUS[sgorder_id]
+
+# TodoList
+# shows a list of all todos, and lets you POST to add new tasks
+class OrderList(Resource):
+    def get(self):
+        global STATUS
+        STATUS = {
+            'status0': {
+            },
+        }
+        no = db.execute("SELECT * FROM orders")
+        x = 0
+        for i in no:
+            order_id = int(max(STATUS.keys()).lstrip('status')) + 1
+            sorder_id = 'status%i' % order_id
+            STATUS[sorder_id] = createjson(order_id)
+            x = x + 1
+        return STATUS
+
+
+##
+## Actually setup the Api resource routing here
+##
+api.add_resource(OrderList, '/status')
+api.add_resource(Order, '/status/<gorder_id>')
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=True)
