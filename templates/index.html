@@ -3,13 +3,14 @@
     SF_Index
 {% endblock %}
 
+
 {% block content %}
-    <table class="table">
+    <table class="sortable">
         <thead>
             <tr>
                 <th>Company</th>
-                <th>Order id</th>
-                <th>District</th>
+                <th >Order id </th>
+                <th aria-sort= "ascending"><button>District<span aria-hidden="true"></span></button></th>
                 <th>Identifier</th>
                 <th>Amount</th>
                 <th>Weight</th>
@@ -24,7 +25,7 @@
                         <td>{{ order.District }}</td>
                         <td>{{ order.Customer_id }}</td>
                         <td>{{ order.Amount }}</td>
-                        <td>{{ order.Total_weight }}</td>
+                        <td class="num">{{ order.Total_weight }}</td>
                         <td>
                             <input type="checkbox" id="id_{{ order.Order_id }}" name="selected_orders" value= "{{ order.Order_id }}" >
                         </td>

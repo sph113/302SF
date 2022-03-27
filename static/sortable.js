@@ -131,7 +131,6 @@ class SortableTable {
     }
   }
 
-  /* EVENT HANDLERS */
 
   handleClick(event) {
     var tgt = event.currentTarget;
@@ -149,8 +148,7 @@ class SortableTable {
   }
 }
 
-// Initialize sortable table buttons
-window.addEventListener('load', function () {
+window.addEventListener('load',function () {
   var sortableTables = document.querySelectorAll('table.sortable');
   for (var i = 0; i < sortableTables.length; i++) {
     new SortableTable(sortableTables[i]);
