@@ -24,7 +24,7 @@ SF Status Check
                     <td>
                         <input type="checkbox" id="id_{{ order.Order_id }}" name="selected_orders" value= "{{ order.Order_id }}" >
                     </td>
-                    <td><a href="/order/{{ order.Order_id }}"><button type="button" class="btn btn-primary">Detail</button></td>
+                    <td><a href="/order/{{ order.Order_id }}"><button type="button" class="btn btn-primary">Detail</button></a></td>
                 </tr>
             {% endfor %}
             <select name="status" id="status" class="form-control">
