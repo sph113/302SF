@@ -170,13 +170,14 @@ class OrderList(Resource):
             'status0': {
             },
         }
-        no = db.execute("SELECT * FROM orders")
+        no = db.execute("SELECT * FROM orders where Order_id > 0")
         x = 0
+        order_id = 1
         for i in no:
-            order_id = int(max(STATUS.keys()).lstrip('status')) + 1
-            sorder_id = 'status%i' % order_id
+            sorder_id = 'status' + str(order_id)
             STATUS[sorder_id] = createjson(order_id)
             x = x + 1
+            order_id = order_id + 1
         return STATUS
 
 
@@ -187,4 +188,4 @@ api.add_resource(OrderList, '/status')
 api.add_resource(Order, '/status/<gorder_id>')
 
 if __name__ == '__main__':
-    app.run(debug=True, use_reloader=True)
+    app.run(debug=True, use_reloader=True,host='0.0.0.0',port=8080)
